@@ -3658,11 +3658,6 @@ ts-jest@^24.0.2:
     semver "^5.5"
     yargs-parser "10.x"
 
-ts-jutil@^0.0.43:
-  version "0.0.43"
-  resolved "https://registry.npmjs.org/ts-jutil/-/ts-jutil-0.0.43.tgz#2bc5a5db19da41813b4bdec4028d6e405839aa11"
-  integrity sha512-vjEuyF85wFfQdHJGmatfJMkrqa+RZDKy9noQ+FlZsAxrDWkB2YTxr9b027/VsSa15O+b4tiBj/E9X+7ZDI+dzQ==
-
 tscpaths@^0.0.9:
   version "0.0.9"
   resolved "https://registry.npmjs.org/tscpaths/-/tscpaths-0.0.9.tgz#c77abfde6820920f10c64f83c27753b9505814ab"

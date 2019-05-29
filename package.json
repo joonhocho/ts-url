@@ -1,7 +1,7 @@
 {
-  "name": "webtil",
-  "version": "0.0.4",
-  "description": "Tiny browser functions for getting information about browser / navigator written in TypeScript",
+  "name": "ts-url",
+  "version": "0.0.1",
+  "description": "URL object parser written in TypeScript",
   "main": "es5/index.js",
   "types": "es5/index.d.ts",
   "scripts": {
@@ -23,20 +23,19 @@
   "pre-commit": "precommit",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/joonhocho/webtil.git"
+    "url": "git+https://github.com/joonhocho/ts-url.git"
   },
   "keywords": [
-    "Browser Information",
-    "Utility Functions",
-    "TypeScript",
-    "Library"
+    "URL",
+    "parser",
+    "TypeScript"
   ],
   "author": "Joon Ho Cho",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/joonhocho/webtil/issues"
+    "url": "https://github.com/joonhocho/ts-url/issues"
   },
-  "homepage": "https://github.com/joonhocho/webtil#readme",
+  "homepage": "https://github.com/joonhocho/ts-url#readme",
   "devDependencies": {
     "@types/jest": "^24.0.13",
     "@types/node": "^12.0.3",
@@ -50,8 +49,5 @@
     "tslint-config-airbnb": "^5.11.1",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.4.5"
-  },
-  "dependencies": {
-    "ts-jutil": "^0.0.43"
   }
 }
