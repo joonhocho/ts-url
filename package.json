@@ -1,6 +1,6 @@
 {
   "name": "ts-url",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "URL object parser written in TypeScript",
   "main": "es5/index.js",
   "types": "es5/index.d.ts",
@@ -48,6 +48,6 @@
     "tslint": "^5.16.0",
     "tslint-config-airbnb": "^5.11.1",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.4.5"
+    "typescript": "^3.5.1"
   }
 }
