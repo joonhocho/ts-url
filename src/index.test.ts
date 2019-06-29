@@ -3,7 +3,7 @@ import { URL } from './index';
 describe('URL', () => {
   test('', () => {
     const url = new URL('');
-    expect(url).toEqual({
+    expect(url).toMatchObject({
       protocol: '',
       hostname: '',
       port: '',
@@ -17,7 +17,7 @@ describe('URL', () => {
 
   test('/path', () => {
     const url = new URL('/path');
-    expect(url).toEqual({
+    expect(url).toMatchObject({
       protocol: '',
       hostname: '',
       port: '',
@@ -31,7 +31,7 @@ describe('URL', () => {
 
   test('//path', () => {
     const url = new URL('//path');
-    expect(url).toEqual({
+    expect(url).toMatchObject({
       protocol: '',
       hostname: 'path',
       port: '',
@@ -45,7 +45,7 @@ describe('URL', () => {
 
   test('http://localhost:3000', () => {
     const url = new URL('http://localhost:3000');
-    expect(url).toEqual({
+    expect(url).toMatchObject({
       protocol: 'http:',
       hostname: 'localhost',
       port: '3000',
@@ -61,7 +61,7 @@ describe('URL', () => {
     const url = new URL(
       'https://a.b.google.com:8080/settings/account?d&c=&b=2&a=1=2#thisis-hash-tag/?thue'
     );
-    expect(url).toEqual({
+    expect(url).toMatchObject({
       protocol: 'https:',
       hostname: 'a.b.google.com',
       port: '8080',
@@ -78,6 +78,15 @@ describe('URL', () => {
     );
   });
 
+  test('HTTPS://A.B.GOOGLE.COM:8080/settings/account?d&c=&b=2&a=1=2#thisis-hash-tag/?thue', () => {
+    const url = new URL(
+      'HTTPS://A.B.GOOGLE.COM:8080/settings/account?d&c=&b=2&a=1=2#thisis-hash-tag/?thue'
+    );
+    expect(url.href).toBe(
+      'https://a.b.google.com:8080/settings/account?d&c=&b=2&a=1=2#thisis-hash-tag/?thue'
+    );
+  });
+
   test('setOrigin', () => {
     const url = new URL(
       'https://a.b.google.com:8080/settings/account?d&c=&b=2&a=1=2#thisis-hash-tag/?thue'
@@ -85,7 +94,7 @@ describe('URL', () => {
     url.origin = 'http://youtube.com/';
     url.pathname = '/a/b/c/';
     url.searchParams = { e: '', d: '1', f: null };
-    expect(url).toEqual({
+    expect(url).toMatchObject({
       protocol: 'http:',
       hostname: 'youtube.com',
       port: '',

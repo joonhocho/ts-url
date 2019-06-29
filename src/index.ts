@@ -16,11 +16,9 @@ export const parseQueryString = (search: string): ISearchParams => {
       }
       return null;
     })
-    .filter((x) => x) as Array<[string, string | null]>)
-    .sort((a, b) => a[0].localeCompare(b[0]))
-    .forEach(([k, v]) => {
-      params[k] = v;
-    });
+    .filter((x) => x) as Array<[string, string | null]>).forEach(([k, v]) => {
+    params[k] = v;
+  });
   return params;
 };
 
@@ -34,6 +32,18 @@ export const formatQueryString = (params: ISearchParams): string => {
         })
         .join('&')}`
     : '';
+};
+
+const compareKeys = (a: string, b: string): number => a.localeCompare(b);
+
+export const sortKeys = (params: ISearchParams): ISearchParams => {
+  const copy: ISearchParams = {};
+  const keys = Object.keys(params).sort(compareKeys);
+  for (let i = 0, len = keys.length; i < len; i += 1) {
+    const key = keys[i];
+    copy[key] = params[key];
+  }
+  return copy;
 };
 
 const protocolRegex = /^(\w+:)\/\//;
@@ -76,15 +86,31 @@ export const splitPath = (url: string): [string, string] => {
 };
 
 export class URL {
-  public protocol = '';
-  public hostname = '';
   public port = '';
   public pathname = '';
   public search = '';
   public hash = '';
+  private _protocol = '';
+  private _hostname = '';
 
   constructor(url: string) {
     this.href = url;
+  }
+
+  get protocol(): string {
+    return this._protocol;
+  }
+
+  set protocol(protocol: string) {
+    this._protocol = protocol.toLowerCase();
+  }
+
+  get hostname(): string {
+    return this._hostname;
+  }
+
+  set hostname(hostname: string) {
+    this._hostname = hostname.toLowerCase();
   }
 
   get host(): string {
@@ -129,15 +155,6 @@ export class URL {
     this.search = formatQueryString(params);
   }
 
-  public addSearchParam(key: string, value: string): URL {
-    this.search += `${this.search ? '&' : '?'}${key}=${value}`;
-    return this;
-  }
-
-  public sortSearch(): string {
-    return (this.search = formatQueryString(this.searchParams));
-  }
-
   get href(): string {
     return `${this.origin}${this.pathname}${this.search}${this.hash}`;
   }
@@ -171,7 +188,16 @@ export class URL {
 
   get normalizedHref(): string {
     return `${this.origin}${this.pathname}${formatQueryString(
-      this.searchParams
+      sortKeys(this.searchParams)
     )}${this.hash}`;
+  }
+
+  public addSearchParam(key: string, value: string): URL {
+    this.search += `${this.search ? '&' : '?'}${key}=${value}`;
+    return this;
+  }
+
+  public sortSearch(): string {
+    return (this.search = formatQueryString(sortKeys(this.searchParams)));
   }
 }
