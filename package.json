@@ -1,6 +1,6 @@
 {
   "name": "ts-url",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "URL object parser written in TypeScript",
   "main": "es5/index.js",
   "types": "es5/index.d.ts",
