@@ -4,21 +4,24 @@ export interface ISearchParams {
 
 export const parseQueryString = (search: string): ISearchParams => {
   const params: ISearchParams = {};
-  ((search[0] === '?' ? search.substring(1) : search)
-    .split('&')
-    .map((x) => {
-      if (x) {
-        const i = x.indexOf('=');
-        if (i === -1) {
-          return [x, null];
+  if (search.length > 1) {
+    (search
+      .substring(1)
+      .split('&')
+      .map((x) => {
+        if (x) {
+          const i = x.indexOf('=');
+          if (i === -1) {
+            return [x, null];
+          }
+          return [x.substring(0, i), x.substring(i + 1)];
         }
-        return [x.substring(0, i), x.substring(i + 1)];
-      }
-      return null;
-    })
-    .filter((x) => x) as Array<[string, string | null]>).forEach(([k, v]) => {
-    params[k] = v;
-  });
+        return null;
+      })
+      .filter((x) => x) as Array<[string, string | null]>).forEach(([k, v]) => {
+      params[k] = v;
+    });
+  }
   return params;
 };
 
@@ -85,13 +88,16 @@ export const splitPath = (url: string): [string, string] => {
   return [url.substring(0, i), url.substring(i)];
 };
 
+export const prefix = (s: string, pre: string): string =>
+  s ? (s.charAt(0) === pre ? s : `${pre}${s}`) : '';
+
 export class URL {
   public port = '';
-  public pathname = '';
-  public search = '';
-  public hash = '';
   private _protocol = '';
   private _hostname = '';
+  private _pathname = '';
+  private _search = '';
+  private _hash = '';
 
   constructor(url: string) {
     this.href = url;
@@ -114,8 +120,8 @@ export class URL {
   }
 
   get host(): string {
-    const { hostname, port } = this;
-    return port ? `${hostname}:${port}` : hostname;
+    const { _hostname, port } = this;
+    return port ? `${_hostname}:${port}` : _hostname;
   }
 
   set host(host: string) {
@@ -130,9 +136,9 @@ export class URL {
   }
 
   get origin(): string {
-    const { protocol, host } = this;
-    if (protocol || host) {
-      return `${protocol}//${host}`;
+    const { _protocol, host } = this;
+    if (_protocol || host) {
+      return `${_protocol}//${host}`;
     }
     return '';
   }
@@ -147,16 +153,40 @@ export class URL {
     this.host = rest.replace(startingSlash, '').replace(endingSlash, '');
   }
 
+  get pathname(): string {
+    return this._pathname;
+  }
+
+  set pathname(pathname: string) {
+    this._pathname = prefix(pathname, '/');
+  }
+
+  get search(): string {
+    return this._search;
+  }
+
+  set search(search: string) {
+    this._search = prefix(search, '?');
+  }
+
   get searchParams(): ISearchParams {
-    return parseQueryString(this.search);
+    return parseQueryString(this._search);
   }
 
   set searchParams(params: ISearchParams) {
-    this.search = formatQueryString(params);
+    this._search = formatQueryString(params);
+  }
+
+  get hash(): string {
+    return this._hash;
+  }
+
+  set hash(hash: string) {
+    this._hash = prefix(hash, '#');
   }
 
   get href(): string {
-    return `${this.origin}${this.pathname}${this.search}${this.hash}`;
+    return `${this.origin}${this._pathname}${this._search}${this._hash}`;
   }
 
   set href(href: string) {
@@ -164,11 +194,11 @@ export class URL {
 
     let hash: string;
     [rest, hash] = splitHash(rest);
-    this.hash = hash;
+    this._hash = hash;
 
     let search: string;
     [rest, search] = splitQuery(rest);
-    this.search = search;
+    this._search = search;
 
     let protocol: string;
     [protocol, rest] = splitProtocol(rest);
@@ -179,25 +209,25 @@ export class URL {
 
       const [host, pathname] = splitPath(rest);
       this.host = host;
-      this.pathname = pathname;
+      this._pathname = pathname;
     } else {
       this.host = '';
-      this.pathname = rest ? (rest.charAt(0) === '/' ? rest : `/${rest}`) : '';
+      this.pathname = rest;
     }
   }
 
   get normalizedHref(): string {
-    return `${this.origin}${this.pathname}${formatQueryString(
+    return `${this.origin}${this._pathname}${formatQueryString(
       sortKeys(this.searchParams)
-    )}${this.hash}`;
+    )}${this._hash}`;
   }
 
   public addSearchParam(key: string, value: string): URL {
-    this.search += `${this.search ? '&' : '?'}${key}=${value}`;
+    this._search += `${this._search ? '&' : '?'}${key}=${value}`;
     return this;
   }
 
   public sortSearch(): string {
-    return (this.search = formatQueryString(sortKeys(this.searchParams)));
+    return (this._search = formatQueryString(sortKeys(this.searchParams)));
   }
 }

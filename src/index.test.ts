@@ -118,4 +118,55 @@ describe('URL', () => {
     expect(url.search).toBe('?d=1&e=&f&g=gg');
     expect(url.searchParams).toEqual({ e: '', d: '1', f: null, g: 'gg' });
   });
+
+  test('pathname', () => {
+    const url = new URL('/a/b');
+    expect(url).toMatchObject({
+      protocol: '',
+      hostname: '',
+      port: '',
+      pathname: '/a/b',
+      hash: '',
+    });
+    expect(url.href).toBe('/a/b');
+    url.pathname = null as any;
+    expect(url.pathname).toBe('');
+    url.pathname = 'a/b';
+    expect(url.pathname).toBe('/a/b');
+  });
+
+  test('search', () => {
+    const url = new URL('?a=1&b=&c');
+    expect(url).toMatchObject({
+      protocol: '',
+      hostname: '',
+      port: '',
+      pathname: '',
+      search: '?a=1&b=&c',
+      hash: '',
+    });
+    expect(url.searchParams).toEqual({ a: '1', b: '', c: null });
+    expect(url.href).toBe('?a=1&b=&c');
+    url.search = null as any;
+    expect(url.search).toBe('');
+    url.search = 'a=b';
+    expect(url.search).toBe('?a=b');
+  });
+
+  test('hash', () => {
+    const url = new URL('#tag');
+    expect(url).toMatchObject({
+      protocol: '',
+      hostname: '',
+      port: '',
+      pathname: '',
+      search: '',
+      hash: '#tag',
+    });
+    expect(url.href).toBe('#tag');
+    url.hash = null as any;
+    expect(url.hash).toBe('');
+    url.hash = 'hh';
+    expect(url.hash).toBe('#hh');
+  });
 });
