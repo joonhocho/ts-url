@@ -1,20 +1,25 @@
 {
   "name": "ts-url",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "URL object parser written in TypeScript",
-  "main": "es5/index.js",
-  "types": "es5/index.d.ts",
+  "module": "lib/index.js",
+  "main": "dist/node/index.js",
+  "browser": "dist/browser/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "all": "yarn clean && yarn format && yarn lint:fix && yarn test && yarn build && yarn build:es5",
-    "build": "tsc -p ./tsconfig.json && tscpaths -p ./tsconfig.json -s ./src -o ./lib",
-    "build:es5": "tsc -p ./tsconfig.es5.json && tscpaths -p ./tsconfig.es5.json -s ./src -o ./es5",
-    "clean": "rm -rf ./lib ./es5 ./coverage",
+    "all": "npm run clean && npm run format && npm run lint:fix && npm run test && npm run build:all",
+    "build:all": "npm run build:module && npm run build:node && npm run build:browser",
+    "build:browser": "tsc -p ./tsconfig.browser.json && tscpaths -p ./tsconfig.browser.json -s ./src -o ./dist/browser",
+    "build:module": "tsc -p ./tsconfig.module.json && tscpaths -p ./tsconfig.module.json -s ./src -o ./lib",
+    "build:node": "tsc -p ./tsconfig.node.json && tscpaths -p ./tsconfig.node.json -s ./src -o ./dist/node",
+    "clean": "rm -rf ./lib ./dist ./coverage",
     "format": "prettier --write \"./*.{js,jsx,ts,tsx}\" \"./src/**/*.{js,jsx,ts,tsx}\"",
     "lint": "tslint -c ./tslint.json \"src/**/*\"",
     "lint:fix": "tslint --fix -c ./tslint.json \"src/**/*\"",
-    "precommit": "yarn all",
-    "reinstall": "rm -rf ./node_modules yarn.lock && yarn",
-    "start": "yarn test",
+    "precommit": "npm run all",
+    "prepublish": "npm run all",
+    "reinstall": "rm -rf ./node_modules package-lock.json.lock yarn.lock && yarn",
+    "start": "npm run test",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:coverage:report": "jest --coverage && cat ./coverage/lcov.info | coveralls",
@@ -38,7 +43,7 @@
   "homepage": "https://github.com/joonhocho/ts-url#readme",
   "devDependencies": {
     "@types/jest": "^24.0.15",
-    "@types/node": "^12.0.12",
+    "@types/node": "^12.6.1",
     "coveralls": "^3.0.4",
     "jest": "^24.8.0",
     "pre-commit": "^1.2.2",
@@ -48,6 +53,6 @@
     "tslint": "^5.18.0",
     "tslint-config-airbnb": "^5.11.1",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.5.2"
+    "typescript": "^3.5.3"
   }
 }
