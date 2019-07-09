@@ -1,8 +1,9 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "./tsconfig.build.json",
   "compilerOptions": {
     "outDir": "lib",
     "declarationDir": "lib",
+    "tsBuildInfoFile": "lib/tsconfig.module.tsbuildinfo",
     "lib": ["esnext"],
     "target": "esnext",
     "module": "es6"

@@ -15,10 +15,10 @@
     "clean": "rm -rf ./lib ./dist ./coverage",
     "format": "prettier --write \"./*.{js,jsx,ts,tsx}\" \"./src/**/*.{js,jsx,ts,tsx}\"",
     "lint": "tslint -c ./tslint.json \"src/**/*\"",
-    "lint:fix": "tslint --fix -c ./tslint.json \"src/**/*\"",
+    "lint:fix": "tslint --fix -c ./tslint.json \"src/**/*.ts\"",
     "precommit": "npm run all",
     "prepublish": "npm run all",
-    "reinstall": "rm -rf ./node_modules package-lock.json.lock yarn.lock && yarn",
+    "reinstall": "rm -rf ./node_modules ./package-lock.json ./yarn.lock && yarn",
     "start": "npm run test",
     "test": "jest",
     "test:coverage": "jest --coverage",
@@ -54,5 +54,8 @@
     "tslint-config-airbnb": "^5.11.1",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.5.3"
+  },
+  "engines": {
+    "node": ">=8.0.0"
   }
 }
