@@ -1,11 +1,27 @@
 {
   "name": "ts-url",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "URL object parser written in TypeScript",
+  "keywords": [
+    "URL",
+    "parser",
+    "TypeScript"
+  ],
+  "author": "Joon Ho Cho",
+  "license": "MIT",
+  "homepage": "https://github.com/joonhocho/ts-url#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joonhocho/ts-url.git"
+  },
+  "bugs": {
+    "url": "https://github.com/joonhocho/ts-url/issues"
+  },
   "module": "lib/index.js",
   "main": "dist/node/index.js",
   "browser": "dist/browser/index.js",
   "types": "lib/index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "all": "npm run clean && npm run format && npm run lint:fix && npm run build:all && npm run test",
     "build:all": "npm run build:module && npm run build:node && npm run build:browser",
@@ -26,21 +42,9 @@
     "test:watch": "jest --watch"
   },
   "pre-commit": "precommit",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/joonhocho/ts-url.git"
+  "peerDependencies": {
+    "tslib": "^1.10.0"
   },
-  "keywords": [
-    "URL",
-    "parser",
-    "TypeScript"
-  ],
-  "author": "Joon Ho Cho",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/joonhocho/ts-url/issues"
-  },
-  "homepage": "https://github.com/joonhocho/ts-url#readme",
   "devDependencies": {
     "@types/jest": "^24.0.15",
     "@types/node": "^12.6.2",
@@ -55,11 +59,7 @@
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.5.3"
   },
-  "peerDependencies": {
-    "tslib": "^1.10.0"
-  },
   "engines": {
     "node": ">=8.0.0"
-  },
-  "sideEffects": false
+  }
 }
