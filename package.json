@@ -43,7 +43,7 @@
   "homepage": "https://github.com/joonhocho/ts-url#readme",
   "devDependencies": {
     "@types/jest": "^24.0.15",
-    "@types/node": "^12.6.1",
+    "@types/node": "^12.6.2",
     "coveralls": "^3.0.4",
     "jest": "^24.8.0",
     "pre-commit": "^1.2.2",
