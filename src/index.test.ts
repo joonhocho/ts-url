@@ -13,6 +13,7 @@ describe('URL', () => {
     });
     expect(url.searchParams).toEqual({});
     expect(url.href).toBe('');
+    expect(url.clone().href).toBe(url.href);
   });
 
   test('/path', () => {
@@ -27,6 +28,7 @@ describe('URL', () => {
     });
     expect(url.searchParams).toEqual({});
     expect(url.href).toBe('/path');
+    expect(url.clone().href).toBe(url.href);
   });
 
   test('//path', () => {
@@ -76,6 +78,7 @@ describe('URL', () => {
     expect(url.normalizedHref).toBe(
       'https://a.b.google.com:8080/settings/account?a=1=2&b=2&c=&d#thisis-hash-tag/?thue'
     );
+    expect(url.clone().href).toBe(url.href);
   });
 
   test('HTTPS://A.B.GOOGLE.COM:8080/settings/account?d&c=&b=2&a=1=2#thisis-hash-tag/?thue', () => {
@@ -117,6 +120,7 @@ describe('URL', () => {
     url.addSearchParam('g', 'gg');
     expect(url.search).toBe('?d=1&e=&f&g=gg');
     expect(url.searchParams).toEqual({ e: '', d: '1', f: null, g: 'gg' });
+    expect(url.clone().href).toBe(url.href);
   });
 
   test('pathname', () => {

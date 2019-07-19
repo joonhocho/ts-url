@@ -100,7 +100,9 @@ export class URL {
   private _hash = '';
 
   constructor(url: string) {
-    this.href = url;
+    if (url) {
+      this.href = url;
+    }
   }
 
   get protocol(): string {
@@ -229,5 +231,16 @@ export class URL {
 
   public sortSearch(): string {
     return (this._search = formatQueryString(sortKeys(this.searchParams)));
+  }
+
+  public clone(): URL {
+    const clone = new URL('');
+    clone.port = this.port;
+    clone._protocol = this._protocol;
+    clone._hostname = this._hostname;
+    clone._pathname = this._pathname;
+    clone._search = this._search;
+    clone._hash = this._hash;
+    return clone;
   }
 }
