@@ -135,8 +135,19 @@ describe('URL', () => {
     expect(url.href).toBe('/a/b');
     url.pathname = null as any;
     expect(url.pathname).toBe('');
+    expect(url.pathnameParts).toEqual([]);
+    url.pathname = '';
+    expect(url.pathname).toBe('');
+    expect(url.pathnameParts).toEqual([]);
+    url.pathname = '/';
+    expect(url.pathname).toBe('/');
+    expect(url.pathnameParts).toEqual(['']);
     url.pathname = 'a/b';
     expect(url.pathname).toBe('/a/b');
+    expect(url.pathnameParts).toEqual(['a', 'b']);
+    url.pathname = 'a/b/';
+    expect(url.pathname).toBe('/a/b/');
+    expect(url.pathnameParts).toEqual(['a', 'b', '']);
   });
 
   test('search', () => {
@@ -153,6 +164,10 @@ describe('URL', () => {
     expect(url.href).toBe('?a=1&b=&c');
     url.search = null as any;
     expect(url.search).toBe('');
+    url.search = '';
+    expect(url.search).toBe('');
+    url.search = '?' as any;
+    expect(url.search).toBe('?');
     url.search = 'a=b';
     expect(url.search).toBe('?a=b');
 
@@ -178,7 +193,73 @@ describe('URL', () => {
     expect(url.href).toBe('#tag');
     url.hash = null as any;
     expect(url.hash).toBe('');
+    url.hash = '';
+    expect(url.hash).toBe('');
+    url.hash = '#';
+    expect(url.hash).toBe('#');
     url.hash = 'hh';
     expect(url.hash).toBe('#hh');
+  });
+
+  test('isSubpathOf', () => {
+    const testSubpath = (
+      sub: string,
+      parent: string,
+      expected: boolean
+    ): boolean =>
+      expect(new URL(sub).isSubpathOf(new URL(parent))).toBe(expected);
+    testSubpath('', '', true);
+    testSubpath('/', '', true);
+    testSubpath('http://', '', false);
+    testSubpath('http://', 'http://', true);
+    testSubpath('http://local:1234', 'http://local:1234', true);
+    testSubpath('http://local:1234', 'http://local:123', false);
+    testSubpath('http://localhost:1234', 'http://local:1234', false);
+    testSubpath('http://local:1234', 'https://local:1234', false);
+    testSubpath('https://local:1234', 'http://local:1234', false);
+    testSubpath('https://local:1234/', 'https://local:1234', true);
+    testSubpath('https://local:1234', 'https://local:1234/', false);
+    testSubpath('https://local:1234/', 'https://local:1234/', true);
+    testSubpath('https://local:1234/a', 'https://local:1234/', false);
+    testSubpath('https://local:1234/a', 'https://local:1234/a', true);
+    testSubpath('https://local:1234/aa', 'https://local:1234/a', false);
+    testSubpath('https://local:1234/a/', 'https://local:1234/a', true);
+    testSubpath('https://local:1234/a', 'https://local:1234/a/', false);
+    testSubpath('https://local:1234/a', 'https://local:1234/a/b', false);
+    testSubpath('https://local:1234/a/b', 'https://local:1234/a', true);
+    testSubpath('https://local:1234/a/b/', 'https://local:1234/a', true);
+    testSubpath('https://local:1234/a/b?a', 'https://local:1234/a', true);
+    testSubpath('https://local:1234/a/b?a', 'https://local:1234/a?a', false);
+    testSubpath('https://local:1234/a/b?a', 'https://local:1234/a#a', false);
+    testSubpath(
+      'https://local:1234/a/b?a=1&b#h',
+      'https://local:1234/a/b',
+      true
+    );
+    testSubpath(
+      'https://local:1234/a/b?a=1#h',
+      'https://local:1234/a/b?a=1#h',
+      true
+    );
+    testSubpath(
+      'https://local:1234/a/b?a=1#h1',
+      'https://local:1234/a/b?a=1#h',
+      false
+    );
+    testSubpath(
+      'https://local:1234/a/b?a=1#h1',
+      'https://local:1234/a/b?a=2#h',
+      false
+    );
+    testSubpath(
+      'https://local:1234/a/b#h1',
+      'https://local:1234/a/b?a=2#h',
+      false
+    );
+    testSubpath(
+      'https://local:1234/a/b?b=2&a=1&c=3#h',
+      'https://local:1234/a/b?a=1#h',
+      true
+    );
   });
 });

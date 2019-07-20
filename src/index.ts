@@ -163,6 +163,11 @@ export class URL {
     this._pathname = prefix(pathname, '/');
   }
 
+  get pathnameParts(): string[] {
+    const { _pathname } = this;
+    return _pathname ? _pathname.substring(1).split('/') : [];
+  }
+
   get search(): string {
     return this._search;
   }
@@ -262,5 +267,53 @@ export class URL {
     clone._search = this._search;
     clone._hash = this._hash;
     return clone;
+  }
+
+  public isSubpathOf(parent: URL): boolean {
+    if (
+      parent._protocol !== this._protocol ||
+      parent._hostname !== this._hostname ||
+      parent.port !== this.port
+    ) {
+      return false;
+    }
+
+    const samePath = parent._pathname === this._pathname;
+    if (samePath) {
+      if (parent._hash && parent._hash !== this._hash) {
+        return false;
+      }
+
+      if (parent._search && parent._search !== this._search) {
+        // compare query subset
+        const thisQuery = this.searchParams;
+        const parentQuery = parent.searchParams;
+        const keys = Object.keys(parentQuery);
+        for (let i = 0, len = keys.length; i < len; i += 1) {
+          const key = keys[i];
+          if (parentQuery[key] !== thisQuery[key]) {
+            return false;
+          }
+        }
+      }
+    } else {
+      // different pathname
+      if (parent._search || parent._hash) {
+        // when different path, parent cannot have search or hash
+        return false;
+      }
+      if (parent._pathname) {
+        // compare subpath
+        const thisParts = this.pathnameParts;
+        const parentParts = parent.pathnameParts;
+        for (let i = 0, len = parentParts.length; i < len; i += 1) {
+          if (parentParts[i] !== thisParts[i]) {
+            return false;
+          }
+        }
+      }
+    }
+
+    return true;
   }
 }
