@@ -117,7 +117,7 @@ describe('URL', () => {
     expect(url.href).toBe(
       'http://youtube.com/a/b/c/?d=1&e=&f#thisis-hash-tag/?thue'
     );
-    url.addSearchParam('g', 'gg');
+    url.setSearchParam('g', 'gg');
     expect(url.search).toBe('?d=1&e=&f&g=gg');
     expect(url.searchParams).toEqual({ e: '', d: '1', f: null, g: 'gg' });
     expect(url.clone().href).toBe(url.href);
@@ -155,6 +155,14 @@ describe('URL', () => {
     expect(url.search).toBe('');
     url.search = 'a=b';
     expect(url.search).toBe('?a=b');
+
+    expect(url.setSearchParam('a', 'c').search).toBe('?a=c');
+    expect(url.setSearchParam('a', null).search).toBe('?a');
+    expect(url.removeSearchParam('a').search).toBe('');
+    expect(url.setSearchParam('a', '1').search).toBe('?a=1');
+    expect(url.setSearchParam('b', '2').search).toBe('?a=1&b=2');
+    expect(url.setSearchParams({ a: null, c: '3' }).search).toBe('?a&b=2&c=3');
+    expect(url.setSearchParams({}).search).toBe('?a&b=2&c=3');
   });
 
   test('hash', () => {

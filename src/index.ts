@@ -224,8 +224,28 @@ export class URL {
     )}${this._hash}`;
   }
 
-  public addSearchParam(key: string, value: string): URL {
-    this._search += `${this._search ? '&' : '?'}${key}=${value}`;
+  public setSearchParam(key: string, value: string | null): URL {
+    const { searchParams } = this;
+    if (searchParams[key] !== value) {
+      searchParams[key] = value;
+      this.searchParams = searchParams;
+    }
+    return this;
+  }
+
+  public setSearchParams(params: ISearchParams): URL {
+    if (Object.keys(params).length) {
+      this.searchParams = Object.assign(this.searchParams, params);
+    }
+    return this;
+  }
+
+  public removeSearchParam(key: string): URL {
+    const { searchParams } = this;
+    if (searchParams.hasOwnProperty(key)) {
+      delete searchParams[key];
+      this.searchParams = searchParams;
+    }
     return this;
   }
 
