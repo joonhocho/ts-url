@@ -76,7 +76,7 @@ describe('URL', () => {
       'https://a.b.google.com:8080/settings/account?d&c=&b=2&a=1=2#thisis-hash-tag/?thue'
     );
     expect(url.normalizedHref).toBe(
-      'https://a.b.google.com:8080/settings/account?a=1=2&b=2&c=&d#thisis-hash-tag/?thue'
+      'https://a.b.google.com:8080/settings/account?a=1%3D2&b=2&c=&d#thisis-hash-tag/?thue'
     );
     expect(url.clone().href).toBe(url.href);
   });
@@ -133,9 +133,6 @@ describe('URL', () => {
       hash: '',
     });
     expect(url.href).toBe('/a/b');
-    url.pathname = null as any;
-    expect(url.pathname).toBe('');
-    expect(url.pathnameParts).toEqual([]);
     url.pathname = '';
     expect(url.pathname).toBe('');
     expect(url.pathnameParts).toEqual([]);
@@ -162,11 +159,9 @@ describe('URL', () => {
     });
     expect(url.searchParams).toEqual({ a: '1', b: '', c: null });
     expect(url.href).toBe('?a=1&b=&c');
-    url.search = null as any;
-    expect(url.search).toBe('');
     url.search = '';
     expect(url.search).toBe('');
-    url.search = '?' as any;
+    url.search = '?';
     expect(url.search).toBe('?');
     url.search = 'a=b';
     expect(url.search).toBe('?a=b');
@@ -180,6 +175,41 @@ describe('URL', () => {
     expect(url.setSearchParams({}).search).toBe('?a&b=2&c=3');
   });
 
+  test('search encode', () => {
+    const url = new URL('?<a>=<b>&<c>=&<d>&=&');
+
+    expect(url).toMatchObject({
+      protocol: '',
+      hostname: '',
+      port: '',
+      pathname: '',
+      search: '?%3Ca%3E=%3Cb%3E&%3Cc%3E=&%3Cd%3E&=&',
+      hash: '',
+    });
+
+    expect(url.searchParams).toEqual({
+      '': '',
+      '<a>': '<b>',
+      '<c>': '',
+      '<d>': null,
+    });
+
+    expect(url.href).toBe('?%3Ca%3E=%3Cb%3E&%3Cc%3E=&%3Cd%3E&=&');
+
+    url.search = '';
+    expect(url.search).toBe('');
+
+    url.search = '?<a>=<b>&<c>=&<d>&=&';
+    expect(url.search).toBe('?%3Ca%3E=%3Cb%3E&%3Cc%3E=&%3Cd%3E&=&');
+
+    url.search = '';
+    expect(url.setSearchParam('<a>', '<b>').search).toBe('?%3Ca%3E=%3Cb%3E');
+
+    expect(url.setSearchParam('<a>', null).search).toBe('?%3Ca%3E');
+
+    expect(url.removeSearchParam('<a>').search).toBe('');
+  });
+
   test('hash', () => {
     const url = new URL('#tag');
     expect(url).toMatchObject({
@@ -191,7 +221,7 @@ describe('URL', () => {
       hash: '#tag',
     });
     expect(url.href).toBe('#tag');
-    url.hash = null as any;
+    url.hash = '';
     expect(url.hash).toBe('');
     url.hash = '';
     expect(url.hash).toBe('');

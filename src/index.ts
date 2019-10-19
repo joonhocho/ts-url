@@ -1,95 +1,21 @@
-export interface ISearchParams {
-  [key: string]: string | null;
-}
+import {
+  formatQueryString,
+  ISearchParams,
+  parseQueryString,
+  sortKeys,
+} from './search';
+import {
+  deprefix,
+  prefix,
+  splitHash,
+  splitPathname,
+  splitProtocol,
+  splitQuery,
+} from './util';
 
-export const parseQueryString = (search: string): ISearchParams => {
-  const params: ISearchParams = {};
-  if (search.length > 1) {
-    (search
-      .substring(1)
-      .split('&')
-      .map((x) => {
-        if (x) {
-          const i = x.indexOf('=');
-          if (i === -1) {
-            return [x, null];
-          }
-          return [x.substring(0, i), x.substring(i + 1)];
-        }
-        return null;
-      })
-      .filter((x) => x) as Array<[string, string | null]>).forEach(([k, v]) => {
-      params[k] = v;
-    });
-  }
-  return params;
-};
-
-export const formatQueryString = (params: ISearchParams): string => {
-  const keys = Object.keys(params);
-  return keys.length
-    ? `?${keys
-        .map((k) => {
-          const v = params[k];
-          return v == null ? k : `${k}=${v}`;
-        })
-        .join('&')}`
-    : '';
-};
-
-const compareKeys = (a: string, b: string): number => a.localeCompare(b);
-
-export const sortKeys = (params: ISearchParams): ISearchParams => {
-  const copy: ISearchParams = {};
-  const keys = Object.keys(params).sort(compareKeys);
-  for (let i = 0, len = keys.length; i < len; i += 1) {
-    const key = keys[i];
-    copy[key] = params[key];
-  }
-  return copy;
-};
-
-const protocolRegex = /^(\w+:)\/\//;
-const startingDoubleSlash = /^\/\//;
 const portRegex = /:(\d+)$/;
-const startingSlash = /^\/+/;
-const endingSlash = /\/+$/;
 
-export const splitProtocol = (url: string): [string, string] => {
-  const match = url.match(protocolRegex);
-  if (match) {
-    const protocol = match[1];
-    return [protocol, url.substring(protocol.length)];
-  }
-  return ['', url];
-};
-
-export const splitHash = (url: string): [string, string] => {
-  const i = url.lastIndexOf('#');
-  if (i === -1) {
-    return [url, ''];
-  }
-  return [url.substring(0, i), url.substring(i)];
-};
-
-export const splitQuery = (url: string): [string, string] => {
-  const i = url.lastIndexOf('?');
-  if (i === -1) {
-    return [url, ''];
-  }
-  return [url.substring(0, i), url.substring(i)];
-};
-
-export const splitPath = (url: string): [string, string] => {
-  const i = url.indexOf('/');
-  if (i === -1) {
-    return [url, ''];
-  }
-  return [url.substring(0, i), url.substring(i)];
-};
-
-export const prefix = (s: string, pre: string): string =>
-  s ? (s.charAt(0) === pre ? s : `${pre}${s}`) : '';
+const edgeSlash = /^\/+|\/+$/g;
 
 export class URL {
   public port = '';
@@ -152,7 +78,7 @@ export class URL {
     [protocol, rest] = splitProtocol(rest);
     this.protocol = protocol;
 
-    this.host = rest.replace(startingSlash, '').replace(endingSlash, '');
+    this.host = rest.replace(edgeSlash, '');
   }
 
   get pathname(): string {
@@ -160,7 +86,15 @@ export class URL {
   }
 
   set pathname(pathname: string) {
-    this._pathname = prefix(pathname, '/');
+    if (pathname.length === 0) {
+      this._pathname = '';
+    } else {
+      if (pathname === '/') {
+        this._pathname = '/';
+      } else {
+        this._pathname = prefix(encodeURI(decodeURI(pathname)), '/');
+      }
+    }
   }
 
   get pathnameParts(): string[] {
@@ -173,7 +107,15 @@ export class URL {
   }
 
   set search(search: string) {
-    this._search = prefix(search, '?');
+    if (search.length === 0) {
+      this._search = '';
+    } else {
+      if (search === '?') {
+        this._search = '?';
+      } else {
+        this._search = prefix(encodeURI(decodeURI(search)), '?');
+      }
+    }
   }
 
   get searchParams(): ISearchParams {
@@ -189,7 +131,18 @@ export class URL {
   }
 
   set hash(hash: string) {
-    this._hash = prefix(hash, '#');
+    if (hash.length === 0) {
+      this._hash = '';
+    } else {
+      if (hash === '#') {
+        this._hash = '#';
+      } else {
+        this._hash = prefix(
+          encodeURIComponent(decodeURIComponent(deprefix(hash, '#'))),
+          '#'
+        );
+      }
+    }
   }
 
   get href(): string {
@@ -197,7 +150,7 @@ export class URL {
   }
 
   set href(href: string) {
-    let rest = href;
+    let rest = encodeURI(decodeURI(href));
 
     let hash: string;
     [rest, hash] = splitHash(rest);
@@ -211,15 +164,14 @@ export class URL {
     [protocol, rest] = splitProtocol(rest);
     this.protocol = protocol;
 
-    if (startingDoubleSlash.test(rest)) {
+    if (rest.substring(0, 2) === '//') {
       rest = rest.substring(2);
-
-      const [host, pathname] = splitPath(rest);
+      const [host, pathname] = splitPathname(rest);
       this.host = host;
       this._pathname = pathname;
     } else {
       this.host = '';
-      this.pathname = rest;
+      this._pathname = rest;
     }
   }
 
