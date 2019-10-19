@@ -16,6 +16,15 @@ describe('URL', () => {
     expect(url.clone().href).toBe(url.href);
   });
 
+  test('build', () => {
+    const url = new URL('');
+    url.origin = 'a.com';
+    url.pathname = '/b/c';
+    url.search = '?d=e';
+    url.hash = '#f';
+    expect(url.href).toBe('//a.com/b/c?d=e#f');
+  });
+
   test('/path', () => {
     const url = new URL('/path');
     expect(url).toMatchObject({
@@ -43,6 +52,20 @@ describe('URL', () => {
     });
     expect(url.searchParams).toEqual({});
     expect(url.href).toBe('//path');
+  });
+
+  test('//a.b/c/d', () => {
+    const url = new URL('//a.b/c/d');
+    expect(url).toMatchObject({
+      protocol: '',
+      hostname: 'a.b',
+      port: '',
+      pathname: '/c/d',
+      search: '',
+      hash: '',
+    });
+    expect(url.searchParams).toEqual({});
+    expect(url.href).toBe('//a.b/c/d');
   });
 
   test('http://localhost:3000', () => {
