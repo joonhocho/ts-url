@@ -315,4 +315,24 @@ describe('URL', () => {
       true
     );
   });
+
+  test.only('encoded search & hash', () => {
+    const urlParam = 'https://bundlephobia.com/result?p=googleapis@41.0.0#a';
+    const encodedUrl = encodeURIComponent(urlParam);
+
+    const url = new URL(
+      `https://google.com/search?<a>=<b>&url=${encodedUrl}#${encodedUrl}`
+    );
+
+    expect(url.searchParams).toEqual({
+      '<a>': '<b>',
+      url: urlParam,
+    });
+
+    expect(url.hash).toBe(`#${encodedUrl}`);
+
+    expect(url.href).toBe(
+      `https://google.com/search?<a>=<b>&url=${encodedUrl}#${encodedUrl}`
+    );
+  });
 });

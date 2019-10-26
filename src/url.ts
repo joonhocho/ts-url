@@ -92,7 +92,10 @@ export class URL {
       if (pathname === '/') {
         this._pathname = '/';
       } else {
-        this._pathname = prefix(encodeURI(decodeURI(pathname)), '/');
+        this._pathname = prefix(
+          encodeURI(decodeURIComponent(deprefix(pathname, '/'))),
+          '/'
+        );
       }
     }
   }
@@ -113,7 +116,10 @@ export class URL {
       if (search === '?') {
         this._search = '?';
       } else {
-        this._search = prefix(encodeURI(decodeURI(search)), '?');
+        this._search = prefix(
+          encodeURIComponent(decodeURIComponent(deprefix(search, '?'))),
+          '?'
+        );
       }
     }
   }
@@ -150,7 +156,7 @@ export class URL {
   }
 
   set href(href: string) {
-    let rest = encodeURI(decodeURI(href));
+    let rest = decodeURI(href);
 
     let hash: string;
     [rest, hash] = splitHash(rest);
