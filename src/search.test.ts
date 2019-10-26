@@ -8,6 +8,16 @@ test('parseQueryString', () => {
     f: null,
   });
 
+  expect(
+    parseQueryString(
+      `?url=${encodeURIComponent(
+        'https://bundlephobia.com/result?p=googleapis@41.0.0'
+      )}`
+    )
+  ).toEqual({
+    url: 'https://bundlephobia.com/result?p=googleapis@41.0.0',
+  });
+
   expect(parseQueryString('?<a>=<b>&<c>=<d>&<a>=<c>&<e>=&<f>&&')).toEqual({
     '<a>': '<c>',
     '<c>': '<d>',
