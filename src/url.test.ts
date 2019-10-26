@@ -259,8 +259,8 @@ describe('URL', () => {
       sub: string,
       parent: string,
       expected: boolean
-    ): boolean =>
-      expect(new URL(sub).isSubpathOf(new URL(parent))).toBe(expected);
+    ): void => expect(new URL(sub).isSubpathOf(new URL(parent))).toBe(expected);
+
     testSubpath('', '', true);
     testSubpath('/', '', true);
     testSubpath('http://', '', false);
