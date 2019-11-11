@@ -3,13 +3,14 @@ import { URL } from './index';
 describe('URL', () => {
   test('', () => {
     const url = new URL('');
-    expect(url).toMatchObject({
-      protocol: '',
-      hostname: '',
+    expect(url).toEqual({
+      _hash: '',
+      _hostname: '',
+      _pathname: '',
+      _protocol: '',
+      _search: '',
+      _searchParams: {},
       port: '',
-      pathname: '',
-      search: '',
-      hash: '',
     });
     expect(url.searchParams).toEqual({});
     expect(url.href).toBe('');
@@ -27,13 +28,14 @@ describe('URL', () => {
 
   test('/path', () => {
     const url = new URL('/path');
-    expect(url).toMatchObject({
-      protocol: '',
-      hostname: '',
+    expect(url).toEqual({
+      _hash: '',
+      _hostname: '',
+      _pathname: '/path',
+      _protocol: '',
+      _search: '',
+      _searchParams: {},
       port: '',
-      pathname: '/path',
-      search: '',
-      hash: '',
     });
     expect(url.searchParams).toEqual({});
     expect(url.href).toBe('/path');
@@ -42,13 +44,14 @@ describe('URL', () => {
 
   test('//path', () => {
     const url = new URL('//path');
-    expect(url).toMatchObject({
-      protocol: '',
-      hostname: 'path',
+    expect(url).toEqual({
+      _hash: '',
+      _hostname: 'path',
+      _pathname: '',
+      _protocol: '',
+      _search: '',
+      _searchParams: {},
       port: '',
-      pathname: '',
-      search: '',
-      hash: '',
     });
     expect(url.searchParams).toEqual({});
     expect(url.href).toBe('//path');
@@ -56,13 +59,14 @@ describe('URL', () => {
 
   test('//a.b/c/d', () => {
     const url = new URL('//a.b/c/d');
-    expect(url).toMatchObject({
-      protocol: '',
-      hostname: 'a.b',
+    expect(url).toEqual({
+      _hash: '',
+      _hostname: 'a.b',
+      _pathname: '/c/d',
+      _protocol: '',
+      _search: '',
+      _searchParams: {},
       port: '',
-      pathname: '/c/d',
-      search: '',
-      hash: '',
     });
     expect(url.searchParams).toEqual({});
     expect(url.href).toBe('//a.b/c/d');
@@ -70,13 +74,14 @@ describe('URL', () => {
 
   test('http://localhost:3000', () => {
     const url = new URL('http://localhost:3000');
-    expect(url).toMatchObject({
-      protocol: 'http:',
-      hostname: 'localhost',
+    expect(url).toEqual({
+      _hash: '',
+      _hostname: 'localhost',
+      _pathname: '',
+      _protocol: 'http:',
+      _search: '',
+      _searchParams: {},
       port: '3000',
-      pathname: '',
-      search: '',
-      hash: '',
     });
     expect(url.searchParams).toEqual({});
     expect(url.href).toBe('http://localhost:3000');
@@ -86,17 +91,18 @@ describe('URL', () => {
     const url = new URL(
       'https://a.b.google.com:8080/settings/account?d&c=&b=2&a=1=2#thisis-hash-tag/?thue'
     );
-    expect(url).toMatchObject({
-      protocol: 'https:',
-      hostname: 'a.b.google.com',
+    expect(url).toEqual({
+      _hash: '#thisis-hash-tag/?thue',
+      _hostname: 'a.b.google.com',
+      _pathname: '/settings/account',
+      _protocol: 'https:',
+      _search: '?d&c=&b=2&a=1%3D2',
+      _searchParams: { a: '1=2', b: '2', c: '', d: null },
       port: '8080',
-      pathname: '/settings/account',
-      search: '?d&c=&b=2&a=1=2',
-      hash: '#thisis-hash-tag/?thue',
     });
     expect(url.searchParams).toEqual({ a: '1=2', b: '2', c: '', d: null });
     expect(url.href).toBe(
-      'https://a.b.google.com:8080/settings/account?d&c=&b=2&a=1=2#thisis-hash-tag/?thue'
+      'https://a.b.google.com:8080/settings/account?d&c=&b=2&a=1%3D2#thisis-hash-tag/?thue'
     );
     expect(url.normalizedHref).toBe(
       'https://a.b.google.com:8080/settings/account?a=1%3D2&b=2&c=&d#thisis-hash-tag/?thue'
@@ -109,7 +115,7 @@ describe('URL', () => {
       'HTTPS://A.B.GOOGLE.COM:8080/settings/account?d&c=&b=2&a=1=2#thisis-hash-tag/?thue'
     );
     expect(url.href).toBe(
-      'https://a.b.google.com:8080/settings/account?d&c=&b=2&a=1=2#thisis-hash-tag/?thue'
+      'https://a.b.google.com:8080/settings/account?d&c=&b=2&a=1%3D2#thisis-hash-tag/?thue'
     );
   });
 
@@ -120,13 +126,14 @@ describe('URL', () => {
     url.origin = 'http://youtube.com/';
     url.pathname = '/a/b/c/';
     url.searchParams = { e: '', d: '1', f: null };
-    expect(url).toMatchObject({
-      protocol: 'http:',
-      hostname: 'youtube.com',
+    expect(url).toEqual({
+      _hash: '#thisis-hash-tag/?thue',
+      _hostname: 'youtube.com',
+      _pathname: '/a/b/c/',
+      _protocol: 'http:',
+      _search: '?e=&d=1&f',
+      _searchParams: { d: '1', e: '', f: null },
       port: '',
-      pathname: '/a/b/c/',
-      search: '?e=&d=1&f',
-      hash: '#thisis-hash-tag/?thue',
     });
     expect(url.searchParams).toEqual({ e: '', d: '1', f: null });
     expect(url.href).toBe(
@@ -148,12 +155,14 @@ describe('URL', () => {
 
   test('pathname', () => {
     const url = new URL('/a/b');
-    expect(url).toMatchObject({
-      protocol: '',
-      hostname: '',
+    expect(url).toEqual({
+      _hash: '',
+      _hostname: '',
+      _pathname: '/a/b',
+      _protocol: '',
+      _search: '',
+      _searchParams: {},
       port: '',
-      pathname: '/a/b',
-      hash: '',
     });
     expect(url.href).toBe('/a/b');
     url.pathname = '';
@@ -172,13 +181,14 @@ describe('URL', () => {
 
   test('search', () => {
     const url = new URL('?a=1&b=&c');
-    expect(url).toMatchObject({
-      protocol: '',
-      hostname: '',
+    expect(url).toEqual({
+      _hash: '',
+      _hostname: '',
+      _pathname: '',
+      _protocol: '',
+      _search: '?a=1&b=&c',
+      _searchParams: { a: '1', b: '', c: null },
       port: '',
-      pathname: '',
-      search: '?a=1&b=&c',
-      hash: '',
     });
     expect(url.searchParams).toEqual({ a: '1', b: '', c: null });
     expect(url.href).toBe('?a=1&b=&c');
@@ -201,29 +211,23 @@ describe('URL', () => {
   test('search encode', () => {
     const url = new URL('?<a>=<b>&<c>=&<d>&=&');
 
-    expect(url).toMatchObject({
-      protocol: '',
-      hostname: '',
+    expect(url).toEqual({
+      _hash: '',
+      _hostname: '',
+      _pathname: '',
+      _protocol: '',
+      _search: '?%3Ca%3E=%3Cb%3E&%3Cc%3E=&%3Cd%3E&=',
+      _searchParams: { '': '', '<a>': '<b>', '<c>': '', '<d>': null },
       port: '',
-      pathname: '',
-      search: '?%3Ca%3E=%3Cb%3E&%3Cc%3E=&%3Cd%3E&=&',
-      hash: '',
     });
 
-    expect(url.searchParams).toEqual({
-      '': '',
-      '<a>': '<b>',
-      '<c>': '',
-      '<d>': null,
-    });
-
-    expect(url.href).toBe('?%3Ca%3E=%3Cb%3E&%3Cc%3E=&%3Cd%3E&=&');
+    expect(url.href).toBe('?%3Ca%3E=%3Cb%3E&%3Cc%3E=&%3Cd%3E&=');
 
     url.search = '';
     expect(url.search).toBe('');
 
     url.search = '?<a>=<b>&<c>=&<d>&=&';
-    expect(url.search).toBe('?%3Ca%3E=%3Cb%3E&%3Cc%3E=&%3Cd%3E&=&');
+    expect(url.search).toBe('?%3Ca%3E=%3Cb%3E&%3Cc%3E=&%3Cd%3E&=');
 
     url.search = '';
     expect(url.setSearchParam('<a>', '<b>').search).toBe('?%3Ca%3E=%3Cb%3E');
@@ -235,13 +239,14 @@ describe('URL', () => {
 
   test('hash', () => {
     const url = new URL('#tag');
-    expect(url).toMatchObject({
-      protocol: '',
-      hostname: '',
+    expect(url).toEqual({
+      _hash: '#tag',
+      _hostname: '',
+      _pathname: '',
+      _protocol: '',
+      _search: '',
+      _searchParams: {},
       port: '',
-      pathname: '',
-      search: '',
-      hash: '#tag',
     });
     expect(url.href).toBe('#tag');
     url.hash = '';
@@ -316,7 +321,7 @@ describe('URL', () => {
     );
   });
 
-  test.only('encoded search & hash', () => {
+  test('encoded search & hash', () => {
     const urlParam = 'https://bundlephobia.com/result?p=googleapis@41.0.0#a';
     const encodedUrl = encodeURIComponent(urlParam);
 
@@ -332,7 +337,34 @@ describe('URL', () => {
     expect(url.hash).toBe(`#${encodedUrl}`);
 
     expect(url.href).toBe(
-      `https://google.com/search?<a>=<b>&url=${encodedUrl}#${encodedUrl}`
+      `https://google.com/search?%3Ca%3E=%3Cb%3E&url=${encodedUrl}#${encodedUrl}`
     );
+  });
+
+  test('test url as search param', () => {
+    const url = new URL(
+      `https://images.unsplash.com/photo-1573489999553-4f904df66f7e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&url=${encodeURIComponent(
+        'https://images.unsplash.com/photo-1573489999553-4f904df66f7e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60'
+      )}&auto=format&fit=crop&w=800&q=60`
+    );
+    expect(url).toEqual({
+      _hash: '',
+      _hostname: 'images.unsplash.com',
+      _pathname: '/photo-1573489999553-4f904df66f7e',
+      _protocol: 'https:',
+      _search:
+        '?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1573489999553-4f904df66f7e%3Fixlib%3Drb-1.2.1%26ixid%3DeyJhcHBfaWQiOjEyMDd9%26auto%3Dformat%26fit%3Dcrop%26w%3D800%26q%3D60&auto=format&fit=crop&w=800&q=60',
+      _searchParams: {
+        auto: 'format',
+        fit: 'crop',
+        ixid: 'eyJhcHBfaWQiOjEyMDd9',
+        ixlib: 'rb-1.2.1',
+        q: '60',
+        url:
+          'https://images.unsplash.com/photo-1573489999553-4f904df66f7e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60',
+        w: '800',
+      },
+      port: '',
+    });
   });
 });

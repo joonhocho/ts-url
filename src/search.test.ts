@@ -35,13 +35,10 @@ test('parseQueryString', () => {
   });
 
   expect(
-    parseQueryString(encodeURIComponent('?<a>=<b>&<c>=<d>&<a>=<c>&<e>=&<f>&&'))
-  ).toEqual({
-    '<a>': '<c>',
-    '<c>': '<d>',
-    '<e>': '',
-    '<f>': null,
-  });
+    parseQueryString(
+      `?${encodeURIComponent('<a>=<b>&<c>=<d>&<a>=<c>&<e>=&<f>&&')}`
+    )
+  ).toEqual({ '<a>=<b>&<c>=<d>&<a>=<c>&<e>=&<f>&&': null });
 });
 
 test('formatQueryString', () => {

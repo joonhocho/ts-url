@@ -5,17 +5,16 @@ export interface ISearchParams {
 export const parseQueryString = (search: string): ISearchParams => {
   const params: ISearchParams = {};
   if (search.length > 1) {
-    const parts = decodeURIComponent(search)
-      .substring(1)
-      .split('&');
+    const parts = search.substring(1).split('&');
     for (let i = 0, len = parts.length; i < len; i += 1) {
       const part = parts[i];
       if (part) {
         const index = part.indexOf('=');
         if (index === -1) {
-          params[part] = null;
+          params[decodeURIComponent(part)] = null;
         } else {
-          params[part.substring(0, index)] = part.substring(index + 1);
+          const key = decodeURIComponent(part.substring(0, index));
+          params[key] = decodeURIComponent(part.substring(index + 1));
         }
       }
     }

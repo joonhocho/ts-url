@@ -7,6 +7,26 @@ import {
   splitQuery,
 } from './util';
 
+test('encodeURI', () => {
+  expect(
+    encodeURI(
+      'https://username:password@www.google.com:8080/search?q=text&page=2&code=<html/>\'"#results'
+    )
+  ).toBe(
+    "https://username:password@www.google.com:8080/search?q=text&page=2&code=%3Chtml/%3E'%22#results"
+  );
+});
+
+test('encodeURIComponent', () => {
+  expect(
+    encodeURIComponent(
+      'https://username:password@www.google.com:8080/search?q=text&page=2&code=<html/>\'"#results'
+    )
+  ).toBe(
+    "https%3A%2F%2Fusername%3Apassword%40www.google.com%3A8080%2Fsearch%3Fq%3Dtext%26page%3D2%26code%3D%3Chtml%2F%3E'%22%23results"
+  );
+});
+
 test('deprefix', () => {
   expect(deprefix('', '/')).toBe('');
   expect(deprefix('/', '/')).toBe('');

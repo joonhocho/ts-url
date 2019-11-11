@@ -23,6 +23,7 @@ export class URL {
   private _hostname = '';
   private _pathname = '';
   private _search = '';
+  private _searchParams: ISearchParams = {};
   private _hash = '';
 
   constructor(url: string) {
@@ -86,17 +87,15 @@ export class URL {
   }
 
   set pathname(pathname: string) {
-    if (pathname.length === 0) {
+    if (!pathname) {
       this._pathname = '';
+    } else if (pathname === '/') {
+      this._pathname = '/';
     } else {
-      if (pathname === '/') {
-        this._pathname = '/';
-      } else {
-        this._pathname = prefix(
-          encodeURI(decodeURIComponent(deprefix(pathname, '/'))),
-          '/'
-        );
-      }
+      this._pathname = prefix(
+        encodeURI(decodeURIComponent(deprefix(pathname, '/'))),
+        '/'
+      );
     }
   }
 
@@ -110,26 +109,26 @@ export class URL {
   }
 
   set search(search: string) {
-    if (search.length === 0) {
+    if (!search) {
       this._search = '';
+      this._searchParams = {};
+    } else if (search === '?') {
+      this._search = '?';
+      this._searchParams = {};
     } else {
-      if (search === '?') {
-        this._search = '?';
-      } else {
-        this._search = prefix(
-          encodeURIComponent(decodeURIComponent(deprefix(search, '?'))),
-          '?'
-        );
-      }
+      const searchParams = parseQueryString(prefix(search, '?'));
+      this._search = formatQueryString(searchParams);
+      this._searchParams = searchParams;
     }
   }
 
   get searchParams(): ISearchParams {
-    return parseQueryString(this._search);
+    return this._searchParams;
   }
 
   set searchParams(params: ISearchParams) {
     this._search = formatQueryString(params);
+    this._searchParams = params;
   }
 
   get hash(): string {
@@ -137,17 +136,15 @@ export class URL {
   }
 
   set hash(hash: string) {
-    if (hash.length === 0) {
+    if (!hash) {
       this._hash = '';
+    } else if (hash === '#') {
+      this._hash = '#';
     } else {
-      if (hash === '#') {
-        this._hash = '#';
-      } else {
-        this._hash = prefix(
-          encodeURIComponent(decodeURIComponent(deprefix(hash, '#'))),
-          '#'
-        );
-      }
+      this._hash = prefix(
+        encodeURIComponent(decodeURIComponent(deprefix(hash, '#'))),
+        '#'
+      );
     }
   }
 
@@ -156,7 +153,7 @@ export class URL {
   }
 
   set href(href: string) {
-    let rest = decodeURI(href);
+    let rest = href;
 
     let hash: string;
     [rest, hash] = splitHash(rest);
@@ -164,7 +161,7 @@ export class URL {
 
     let search: string;
     [rest, search] = splitQuery(rest);
-    this._search = search;
+    this.search = search;
 
     let protocol: string;
     [protocol, rest] = splitProtocol(rest);
@@ -213,7 +210,10 @@ export class URL {
   }
 
   public sortSearch(): string {
-    return (this._search = formatQueryString(sortKeys(this.searchParams)));
+    const searchParams = sortKeys(this.searchParams);
+    this._search = formatQueryString(searchParams);
+    this._searchParams = searchParams;
+    return this._search;
   }
 
   public clone(): URL {
@@ -223,6 +223,7 @@ export class URL {
     clone._hostname = this._hostname;
     clone._pathname = this._pathname;
     clone._search = this._search;
+    clone._searchParams = this._searchParams;
     clone._hash = this._hash;
     return clone;
   }
