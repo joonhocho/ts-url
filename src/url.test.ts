@@ -367,4 +367,33 @@ describe('URL', () => {
       port: '',
     });
   });
+
+  test('mailto', () => {
+    const url = new URL('mailto: test+1234@gmail.com');
+    expect(url).toEqual({
+      _hash: '',
+      _hostname: '',
+      _pathname: ' test+1234@gmail.com',
+      _protocol: 'mailto:',
+      _search: '',
+      _searchParams: {},
+      port: '',
+    });
+    expect(url.href).toEqual('mailto: test+1234@gmail.com');
+  });
+
+  test('tel', () => {
+    const raw = 'tel:+31123456789';
+    const url = new URL(raw);
+    expect(url).toEqual({
+      _hash: '',
+      _hostname: '',
+      _pathname: '+31123456789',
+      _protocol: 'tel:',
+      _search: '',
+      _searchParams: {},
+      port: '',
+    });
+    expect(url.href).toEqual(raw);
+  });
 });

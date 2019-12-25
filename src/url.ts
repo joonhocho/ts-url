@@ -67,7 +67,14 @@ export class URL {
   get origin(): string {
     const { _protocol, host } = this;
     if (_protocol || host) {
-      return `${_protocol}//${host}`;
+      return `${_protocol}${
+        _protocol === '' ||
+        _protocol === 'https:' ||
+        _protocol === 'http:' ||
+        _protocol === 'ftp:'
+          ? '//'
+          : ''
+      }${host}`;
     }
     return '';
   }

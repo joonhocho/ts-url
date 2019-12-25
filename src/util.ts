@@ -29,12 +29,12 @@ export const splitPathname = (url: string): [string, string] => {
   return i === -1 ? [url, ''] : [url.substring(0, i), url.substring(i)];
 };
 
-const protocolRegex = /^(\w*:)\/\//;
+const protocolRegex = /^\w*:/;
 
 export const splitProtocol = (url: string): [string, string] => {
   const match = url.match(protocolRegex);
   if (match) {
-    const protocol = match[1];
+    const protocol = match[0];
     return [protocol, url.substring(protocol.length)];
   }
   return ['', url];

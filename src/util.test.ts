@@ -86,8 +86,8 @@ test('splitProtocol', () => {
   expect(splitProtocol('a')).toEqual(['', 'a']);
   expect(splitProtocol('/a')).toEqual(['', '/a']);
   expect(splitProtocol('//a')).toEqual(['', '//a']);
-  expect(splitProtocol(':')).toEqual(['', ':']);
-  expect(splitProtocol(':/')).toEqual(['', ':/']);
+  expect(splitProtocol(':')).toEqual([':', '']);
+  expect(splitProtocol(':/')).toEqual([':', '/']);
   expect(splitProtocol('://')).toEqual([':', '//']);
   expect(splitProtocol('a://')).toEqual(['a:', '//']);
   expect(splitProtocol('a:///')).toEqual(['a:', '///']);
