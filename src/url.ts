@@ -266,9 +266,12 @@ export class URL {
 
   public clone(): URL {
     const clone = new URL('');
-    clone.port = this.port;
     clone._protocol = this._protocol;
+    clone.leadingSlashes = this.leadingSlashes;
+    clone.username = this.username;
+    clone.password = this.password;
     clone._hostname = this._hostname;
+    clone.port = this.port;
     clone._pathname = this._pathname;
     clone._search = this._search;
     clone._searchParams = this._searchParams;
