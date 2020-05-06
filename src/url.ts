@@ -1,3 +1,4 @@
+// tslint:disable member-ordering
 import {
   formatQueryString,
   ISearchParams,
@@ -5,22 +6,38 @@ import {
   sortKeys,
 } from './search';
 import {
-  deprefix,
-  prefix,
+  deprefixChar,
+  encodePathname,
+  prefixChar,
   splitHash,
+  splitPassword,
   splitPathname,
   splitProtocol,
   splitQuery,
+  splitUserInfo,
+  trim,
 } from './util';
 
 const portRegex = /:(\d+)$/;
 
 const edgeSlash = /^\/+|\/+$/g;
 
+export const protocolSlashes: { [key: string]: string } = {
+  'ftp:': '//',
+  'http:': '//',
+  'https:': '//',
+  'mailto:': '',
+  'tel:': '',
+  '': '//',
+};
+
 export class URL {
-  public port = '';
   private _protocol = '';
+  public leadingSlashes = protocolSlashes[''];
+  public username = '';
+  public password = '';
   private _hostname = '';
+  public port = '';
   private _pathname = '';
   private _search = '';
   private _searchParams: ISearchParams = {};
@@ -38,6 +55,20 @@ export class URL {
 
   set protocol(protocol: string) {
     this._protocol = protocol.toLowerCase();
+    const slashes = protocolSlashes[this._protocol];
+    this.leadingSlashes =
+      typeof slashes === 'string' ? slashes : protocolSlashes[''];
+  }
+
+  get userinfo(): string {
+    const { username, password } = this;
+    return password ? `${username}:${password}` : username;
+  }
+
+  set userinfo(userinfo: string) {
+    const [username, password] = splitPassword(userinfo);
+    this.username = username;
+    this.password = password;
   }
 
   get hostname(): string {
@@ -67,14 +98,7 @@ export class URL {
   get origin(): string {
     const { _protocol, host } = this;
     if (_protocol || host) {
-      return `${_protocol}${
-        _protocol === '' ||
-        _protocol === 'https:' ||
-        _protocol === 'http:' ||
-        _protocol === 'ftp:'
-          ? '//'
-          : ''
-      }${host}`;
+      return `${_protocol}${this.leadingSlashes}${host}`;
     }
     return '';
   }
@@ -89,6 +113,16 @@ export class URL {
     this.host = rest.replace(edgeSlash, '');
   }
 
+  get originWithUserinfo(): string {
+    const { _protocol, userinfo, host } = this;
+    if (_protocol || userinfo || host) {
+      return `${_protocol}${this.leadingSlashes}${
+        userinfo ? `${userinfo}@` : ''
+      }${host}`;
+    }
+    return '';
+  }
+
   get pathname(): string {
     return this._pathname;
   }
@@ -99,16 +133,20 @@ export class URL {
     } else if (pathname === '/') {
       this._pathname = '/';
     } else {
-      this._pathname = prefix(
-        encodeURI(decodeURIComponent(deprefix(pathname, '/'))),
-        '/'
+      const hasPrefix = pathname[0] === '/';
+      const encoded = encodePathname(
+        decodeURIComponent(deprefixChar(pathname, '/'))
       );
+      this._pathname =
+        hasPrefix || this._hostname || this.port
+          ? prefixChar(encoded, '/')
+          : encoded;
     }
   }
 
   get pathnameParts(): string[] {
     const { _pathname } = this;
-    return _pathname ? _pathname.substring(1).split('/') : [];
+    return _pathname ? deprefixChar(_pathname, '/').split('/') : [];
   }
 
   get search(): string {
@@ -123,7 +161,7 @@ export class URL {
       this._search = '?';
       this._searchParams = {};
     } else {
-      const searchParams = parseQueryString(prefix(search, '?'));
+      const searchParams = parseQueryString(prefixChar(search, '?'));
       this._search = formatQueryString(searchParams);
       this._searchParams = searchParams;
     }
@@ -148,19 +186,19 @@ export class URL {
     } else if (hash === '#') {
       this._hash = '#';
     } else {
-      this._hash = prefix(
-        encodeURIComponent(decodeURIComponent(deprefix(hash, '#'))),
+      this._hash = prefixChar(
+        encodeURIComponent(decodeURIComponent(deprefixChar(hash, '#'))),
         '#'
       );
     }
   }
 
   get href(): string {
-    return `${this.origin}${this._pathname}${this._search}${this._hash}`;
+    return `${this.originWithUserinfo}${this._pathname}${this._search}${this._hash}`;
   }
 
   set href(href: string) {
-    let rest = href;
+    let rest = trim(href);
 
     let hash: string;
     [rest, hash] = splitHash(rest);
@@ -174,19 +212,22 @@ export class URL {
     [protocol, rest] = splitProtocol(rest);
     this.protocol = protocol;
 
+    let pathname: string;
     if (rest.substring(0, 2) === '//') {
       rest = rest.substring(2);
-      const [host, pathname] = splitPathname(rest);
-      this.host = host;
-      this._pathname = pathname;
+      [rest, pathname] = splitPathname(rest);
     } else {
-      this.host = '';
-      this._pathname = rest;
+      [rest, pathname] = splitPathname(rest);
     }
+    this.pathname = pathname;
+
+    const [userinfo, host] = splitUserInfo(rest);
+    this.host = host;
+    this.userinfo = userinfo;
   }
 
   get normalizedHref(): string {
-    return `${this.origin}${this._pathname}${formatQueryString(
+    return `${this.originWithUserinfo}${this._pathname}${formatQueryString(
       sortKeys(this.searchParams)
     )}${this._hash}`;
   }

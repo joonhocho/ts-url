@@ -1,16 +1,23 @@
 import { URL } from './index';
 
+const defaultUrlProps = {
+  _hash: '',
+  _hostname: '',
+  _pathname: '',
+  _protocol: '',
+  _search: '',
+  _searchParams: {},
+  port: '',
+  username: '',
+  password: '',
+  leadingSlashes: '//',
+};
+
 describe('URL', () => {
   test('', () => {
     const url = new URL('');
     expect(url).toEqual({
-      _hash: '',
-      _hostname: '',
-      _pathname: '',
-      _protocol: '',
-      _search: '',
-      _searchParams: {},
-      port: '',
+      ...defaultUrlProps,
     });
     expect(url.searchParams).toEqual({});
     expect(url.href).toBe('');
@@ -23,19 +30,35 @@ describe('URL', () => {
     url.pathname = '/b/c';
     url.search = '?d=e';
     url.hash = '#f';
+    expect(url).toEqual({
+      ...defaultUrlProps,
+      _hash: '#f',
+      _hostname: 'a.com',
+      _pathname: '/b/c',
+      _search: '?d=e',
+      _searchParams: { d: 'e' },
+    });
+    expect(url.href).toBe('//a.com/b/c?d=e#f');
+  });
+
+  test('//a.com/b/c?d=e#f', () => {
+    const url = new URL('//a.com/b/c?d=e#f');
+    expect(url).toEqual({
+      ...defaultUrlProps,
+      _hash: '#f',
+      _hostname: 'a.com',
+      _pathname: '/b/c',
+      _search: '?d=e',
+      _searchParams: { d: 'e' },
+    });
     expect(url.href).toBe('//a.com/b/c?d=e#f');
   });
 
   test('/path', () => {
     const url = new URL('/path');
     expect(url).toEqual({
-      _hash: '',
-      _hostname: '',
+      ...defaultUrlProps,
       _pathname: '/path',
-      _protocol: '',
-      _search: '',
-      _searchParams: {},
-      port: '',
     });
     expect(url.searchParams).toEqual({});
     expect(url.href).toBe('/path');
@@ -45,13 +68,8 @@ describe('URL', () => {
   test('//path', () => {
     const url = new URL('//path');
     expect(url).toEqual({
-      _hash: '',
+      ...defaultUrlProps,
       _hostname: 'path',
-      _pathname: '',
-      _protocol: '',
-      _search: '',
-      _searchParams: {},
-      port: '',
     });
     expect(url.searchParams).toEqual({});
     expect(url.href).toBe('//path');
@@ -60,13 +78,9 @@ describe('URL', () => {
   test('//a.b/c/d', () => {
     const url = new URL('//a.b/c/d');
     expect(url).toEqual({
-      _hash: '',
+      ...defaultUrlProps,
       _hostname: 'a.b',
       _pathname: '/c/d',
-      _protocol: '',
-      _search: '',
-      _searchParams: {},
-      port: '',
     });
     expect(url.searchParams).toEqual({});
     expect(url.href).toBe('//a.b/c/d');
@@ -75,12 +89,9 @@ describe('URL', () => {
   test('http://localhost:3000', () => {
     const url = new URL('http://localhost:3000');
     expect(url).toEqual({
-      _hash: '',
+      ...defaultUrlProps,
       _hostname: 'localhost',
-      _pathname: '',
       _protocol: 'http:',
-      _search: '',
-      _searchParams: {},
       port: '3000',
     });
     expect(url.searchParams).toEqual({});
@@ -92,6 +103,7 @@ describe('URL', () => {
       'https://a.b.google.com:8080/settings/account?d&c=&b=2&a=1=2#thisis-hash-tag/?thue'
     );
     expect(url).toEqual({
+      ...defaultUrlProps,
       _hash: '#thisis-hash-tag/?thue',
       _hostname: 'a.b.google.com',
       _pathname: '/settings/account',
@@ -127,6 +139,7 @@ describe('URL', () => {
     url.pathname = '/a/b/c/';
     url.searchParams = { e: '', d: '1', f: null };
     expect(url).toEqual({
+      ...defaultUrlProps,
       _hash: '#thisis-hash-tag/?thue',
       _hostname: 'youtube.com',
       _pathname: '/a/b/c/',
@@ -156,13 +169,8 @@ describe('URL', () => {
   test('pathname', () => {
     const url = new URL('/a/b');
     expect(url).toEqual({
-      _hash: '',
-      _hostname: '',
+      ...defaultUrlProps,
       _pathname: '/a/b',
-      _protocol: '',
-      _search: '',
-      _searchParams: {},
-      port: '',
     });
     expect(url.href).toBe('/a/b');
     url.pathname = '';
@@ -172,23 +180,19 @@ describe('URL', () => {
     expect(url.pathname).toBe('/');
     expect(url.pathnameParts).toEqual(['']);
     url.pathname = 'a/b';
-    expect(url.pathname).toBe('/a/b');
+    expect(url.pathname).toBe('a/b');
     expect(url.pathnameParts).toEqual(['a', 'b']);
     url.pathname = 'a/b/';
-    expect(url.pathname).toBe('/a/b/');
+    expect(url.pathname).toBe('a/b/');
     expect(url.pathnameParts).toEqual(['a', 'b', '']);
   });
 
   test('search', () => {
     const url = new URL('?a=1&b=&c');
     expect(url).toEqual({
-      _hash: '',
-      _hostname: '',
-      _pathname: '',
-      _protocol: '',
+      ...defaultUrlProps,
       _search: '?a=1&b=&c',
       _searchParams: { a: '1', b: '', c: null },
-      port: '',
     });
     expect(url.searchParams).toEqual({ a: '1', b: '', c: null });
     expect(url.href).toBe('?a=1&b=&c');
@@ -212,13 +216,9 @@ describe('URL', () => {
     const url = new URL('?<a>=<b>&<c>=&<d>&=&');
 
     expect(url).toEqual({
-      _hash: '',
-      _hostname: '',
-      _pathname: '',
-      _protocol: '',
+      ...defaultUrlProps,
       _search: '?%3Ca%3E=%3Cb%3E&%3Cc%3E=&%3Cd%3E&=',
       _searchParams: { '': '', '<a>': '<b>', '<c>': '', '<d>': null },
-      port: '',
     });
 
     expect(url.href).toBe('?%3Ca%3E=%3Cb%3E&%3Cc%3E=&%3Cd%3E&=');
@@ -240,13 +240,8 @@ describe('URL', () => {
   test('hash', () => {
     const url = new URL('#tag');
     expect(url).toEqual({
+      ...defaultUrlProps,
       _hash: '#tag',
-      _hostname: '',
-      _pathname: '',
-      _protocol: '',
-      _search: '',
-      _searchParams: {},
-      port: '',
     });
     expect(url.href).toBe('#tag');
     url.hash = '';
@@ -348,7 +343,7 @@ describe('URL', () => {
       )}&auto=format&fit=crop&w=800&q=60`
     );
     expect(url).toEqual({
-      _hash: '',
+      ...defaultUrlProps,
       _hostname: 'images.unsplash.com',
       _pathname: '/photo-1573489999553-4f904df66f7e',
       _protocol: 'https:',
@@ -364,20 +359,17 @@ describe('URL', () => {
           'https://images.unsplash.com/photo-1573489999553-4f904df66f7e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60',
         w: '800',
       },
-      port: '',
     });
   });
 
   test('mailto', () => {
     const url = new URL('mailto: test+1234@gmail.com');
     expect(url).toEqual({
-      _hash: '',
-      _hostname: '',
-      _pathname: ' test+1234@gmail.com',
+      ...defaultUrlProps,
       _protocol: 'mailto:',
-      _search: '',
-      _searchParams: {},
-      port: '',
+      leadingSlashes: '',
+      username: ' test+1234',
+      _hostname: 'gmail.com',
     });
     expect(url.href).toEqual('mailto: test+1234@gmail.com');
   });
@@ -386,14 +378,60 @@ describe('URL', () => {
     const raw = 'tel:+31123456789';
     const url = new URL(raw);
     expect(url).toEqual({
-      _hash: '',
-      _hostname: '',
-      _pathname: '+31123456789',
+      ...defaultUrlProps,
       _protocol: 'tel:',
-      _search: '',
-      _searchParams: {},
-      port: '',
+      leadingSlashes: '',
+      _hostname: '+31123456789',
     });
     expect(url.href).toEqual(raw);
   });
+
+  test('path only', () => {
+    expect(new URL('user/id')).toEqual({
+      ...defaultUrlProps,
+      _hostname: 'user',
+      _pathname: '/id',
+    });
+    expect(new URL('user/id').pathnameParts).toEqual(['id']);
+
+    expect(new URL('user/id/')).toEqual({
+      ...defaultUrlProps,
+      _hostname: 'user',
+      _pathname: '/id/',
+    });
+    expect(new URL('user/id/').pathnameParts).toEqual(['id', '']);
+
+    expect(new URL('/user/id')).toEqual({
+      ...defaultUrlProps,
+      _pathname: '/user/id',
+    });
+    expect(new URL('/user/id').pathnameParts).toEqual(['user', 'id']);
+
+    expect(new URL('/user/id/')).toEqual({
+      ...defaultUrlProps,
+      _pathname: '/user/id/',
+    });
+    expect(new URL('/user/id/').pathnameParts).toEqual(['user', 'id', '']);
+  });
+});
+
+test('path with whitespace', () => {
+  const url = new URL('');
+  url.pathname = '  ';
+  expect(url).toEqual({
+    ...defaultUrlProps,
+    _pathname: '%20%20',
+  });
+  expect(url.pathnameParts).toEqual(['%20%20']);
+});
+
+test('android.resource://com.example.project/', () => {
+  const url = new URL('android.resource://com.example.project/');
+  expect(url).toEqual({
+    ...defaultUrlProps,
+    _protocol: 'android.resource:',
+    _hostname: 'com.example.project',
+    _pathname: '/',
+  });
+  expect(url.pathnameParts).toEqual(['']);
 });

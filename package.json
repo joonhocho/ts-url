@@ -23,11 +23,12 @@
   "types": "lib/index.d.ts",
   "sideEffects": false,
   "scripts": {
-    "all": "npm run clean && npm run format && npm run lint:fix && npm run build:all && npm run test",
+    "all": "npm run clean && npm run build:index && npm run format && npm run lint:fix && npm run build:all && npm run test",
     "build:all": "npm run build:module && npm run build:node && npm run build:browser",
     "build:browser": "tsc -p ./tsconfig.browser.json && tscpaths -p ./tsconfig.browser.json -s ./src -o ./dist/browser",
     "build:module": "tsc -p ./tsconfig.module.json && tscpaths -p ./tsconfig.module.json -s ./src -o ./lib",
     "build:node": "tsc -p ./tsconfig.node.json && tscpaths -p ./tsconfig.node.json -s ./src -o ./dist/node",
+    "build:index": "tstf genIndex -o src/index.ts -w",
     "clean": "rm -rf ./lib ./dist ./coverage",
     "format": "prettier --write \"./*.{js,jsx,ts,tsx}\" \"./src/**/*.{js,jsx,ts,tsx}\"",
     "lint": "tslint -c ./tslint.json \"src/**/*.ts\"",
@@ -57,6 +58,7 @@
     "tslint": "^5.20.1",
     "tslint-config-airbnb": "^5.11.2",
     "tslint-config-prettier": "^1.18.0",
+    "tstf": "^0.0.23",
     "typescript": "^3.7.4"
   },
   "engines": {

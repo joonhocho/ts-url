@@ -1,13 +1,41 @@
+import { URL } from 'url';
+
 import {
   deprefix,
+  deprefixChar,
+  encodePathname,
   prefix,
+  prefixChar,
   splitHash,
+  splitPassword,
   splitPathname,
   splitProtocol,
   splitQuery,
+  splitUserInfo,
+  trim,
 } from './util';
 
+test('trim', () => {
+  expect(trim('')).toBe('');
+  expect(trim('   ')).toBe('');
+  expect(trim(' a  ')).toBe('a');
+});
+
+test('encodePathname', () => {
+  expect(encodePathname(' ,/:@&=+$?#')).toBe('%20,/:@&=+$%3F%23');
+
+  expect(encodePathname(' ,/:@&=+$?# ,/:@&=+$?#')).toBe(
+    '%20,/:@&=+$%3F%23%20,/:@&=+$%3F%23'
+  );
+
+  const url = new URL('https://username:password@google.com/a');
+  url.pathname = ' ,/:@&=+$?#';
+  expect(url.pathname).toBe('/%20,/:@&=+$%3F%23');
+  expect(url.pathname).toBe(`/${encodePathname(' ,/:@&=+$?#')}`);
+});
+
 test('encodeURI', () => {
+  expect(encodeURI(' ,/:@&=+$?#')).toBe('%20,/:@&=+$?#');
   expect(
     encodeURI(
       'https://username:password@www.google.com:8080/search?q=text&page=2&code=<html/>\'"#results'
@@ -18,6 +46,9 @@ test('encodeURI', () => {
 });
 
 test('encodeURIComponent', () => {
+  expect(encodeURIComponent(' ,/:@&=+$?#')).toBe(
+    '%20%2C%2F%3A%40%26%3D%2B%24%3F%23'
+  );
   expect(
     encodeURIComponent(
       'https://username:password@www.google.com:8080/search?q=text&page=2&code=<html/>\'"#results'
@@ -49,6 +80,46 @@ test('prefix', () => {
   expect(prefix('//', '/?')).toBe('/?//');
   expect(prefix('/?', '/?')).toBe('/?');
   expect(prefix('/?a', '/?')).toBe('/?a');
+});
+
+test('prefixChar', () => {
+  expect(prefixChar('a', '/')).toBe('/a');
+  expect(prefixChar('/a', '/')).toBe('/a');
+  expect(prefixChar('//a', '/')).toBe('//a');
+
+  expect(prefixChar('a', '?')).toBe('?a');
+  expect(prefixChar('?a', '?')).toBe('?a');
+  expect(prefixChar('??a', '?')).toBe('??a');
+});
+
+test('deprefixChar', () => {
+  expect(deprefixChar('a', '/')).toBe('a');
+  expect(deprefixChar('/a', '/')).toBe('a');
+  expect(deprefixChar('//a', '/')).toBe('/a');
+
+  expect(deprefixChar('a', '?')).toBe('a');
+  expect(deprefixChar('?a', '?')).toBe('a');
+  expect(deprefixChar('?/a', '?')).toBe('/a');
+});
+
+test('splitUserInfo', () => {
+  expect(splitUserInfo('')).toEqual(['', '']);
+  expect(splitUserInfo('a')).toEqual(['', 'a']);
+  expect(splitUserInfo('@')).toEqual(['', '']);
+  expect(splitUserInfo('a@')).toEqual(['a', '']);
+  expect(splitUserInfo('@a')).toEqual(['', 'a']);
+  expect(splitUserInfo('a@b')).toEqual(['a', 'b']);
+  expect(splitUserInfo('a@b@c')).toEqual(['a', 'b@c']);
+});
+
+test('splitPassword', () => {
+  expect(splitPassword('')).toEqual(['', '']);
+  expect(splitPassword('a')).toEqual(['a', '']);
+  expect(splitPassword(':')).toEqual(['', '']);
+  expect(splitPassword('a:')).toEqual(['a', '']);
+  expect(splitPassword(':a')).toEqual(['', 'a']);
+  expect(splitPassword('a:b')).toEqual(['a', 'b']);
+  expect(splitPassword('a:b:c')).toEqual(['a', 'b:c']);
 });
 
 test('splitHash', () => {
