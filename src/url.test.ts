@@ -1,3 +1,4 @@
+// tslint:disable typedef
 import { URL } from './index';
 
 const defaultUrlProps = {

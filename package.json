@@ -47,19 +47,19 @@
     "tslib": "^1.10.0"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.24",
-    "@types/node": "^13.1.0",
-    "coveralls": "^3.0.9",
-    "jest": "^24.9.0",
+    "@types/jest": "^25.2.1",
+    "@types/node": "^13.13.5",
+    "coveralls": "^3.1.0",
+    "jest": "^26.0.1",
     "pre-commit": "^1.2.2",
-    "prettier": "^1.19.1",
-    "ts-jest": "^24.2.0",
+    "prettier": "^2.0.5",
+    "ts-jest": "^25.4.0",
     "tscpaths": "^0.0.9",
-    "tslint": "^5.20.1",
+    "tslint": "^6.1.2",
     "tslint-config-airbnb": "^5.11.2",
     "tslint-config-prettier": "^1.18.0",
     "tstf": "^0.0.23",
-    "typescript": "^3.7.4"
+    "typescript": "^3.8.3"
   },
   "engines": {
     "node": ">=8.0.0"

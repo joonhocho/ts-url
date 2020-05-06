@@ -1,3 +1,4 @@
+// tslint:disable typedef
 import { formatQueryString, parseQueryString } from './search';
 
 test('parseQueryString', () => {

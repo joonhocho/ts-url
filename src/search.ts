@@ -26,7 +26,7 @@ export const formatQueryString = (params: ISearchParams): string => {
   const keys = Object.keys(params);
   return keys.length
     ? `?${keys
-        .map((k) => {
+        .map((k): string => {
           const v = params[k];
           return v == null
             ? encodeURIComponent(k)
