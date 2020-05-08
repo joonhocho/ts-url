@@ -436,3 +436,91 @@ test('android.resource://com.example.project/', () => {
   });
   expect(url.pathnameParts).toEqual(['']);
 });
+
+test('normalizedHref, relativeHref', () => {
+  const url = new URL('HTTP://GooGle.Com/');
+  expect(url).toEqual({
+    ...defaultUrlProps,
+    _hostname: 'google.com',
+    _pathname: '/',
+    _protocol: 'http:',
+  });
+  expect(url.href).toEqual('http://google.com/');
+  expect(url.normalizedHref).toEqual('http://google.com/');
+  expect(url.relativeHref).toEqual('/');
+  expect(url.normalizedRelativeHref).toEqual('/');
+  expect(url.pathnameParts).toEqual(['']);
+});
+
+test('normalizedHref, relativeHref', () => {
+  const url = new URL(
+    'HtTPs://UseR:PasS@GooGle.Com:1234/HelloWorld/YouTube/?B=2&a=1#HaSh'
+  );
+  expect(url).toEqual({
+    ...defaultUrlProps,
+    _hash: '#HaSh',
+    _hostname: 'google.com',
+    _pathname: '/HelloWorld/YouTube/',
+    _protocol: 'https:',
+    _search: '?B=2&a=1',
+    _searchParams: { B: '2', a: '1' },
+    password: 'PasS',
+    port: '1234',
+    username: 'UseR',
+  });
+  expect(url.href).toEqual(
+    'https://UseR:PasS@google.com:1234/HelloWorld/YouTube/?B=2&a=1#HaSh'
+  );
+  expect(url.normalizedHref).toEqual(
+    'https://UseR:PasS@google.com:1234/HelloWorld/YouTube/?a=1&B=2#HaSh'
+  );
+  expect(url.relativeHref).toEqual('/HelloWorld/YouTube/?B=2&a=1#HaSh');
+  expect(url.normalizedRelativeHref).toEqual(
+    '/HelloWorld/YouTube/?a=1&B=2#HaSh'
+  );
+  expect(url.pathnameParts).toEqual(['HelloWorld', 'YouTube', '']);
+});
+
+test('pathnameParts', () => {
+  const url = new URL('https://google.com');
+
+  url.pathname = '';
+  expect(url.pathname).toEqual('');
+  expect(url.pathnameParts).toEqual([]);
+
+  url.pathname = '/';
+  expect(url.pathname).toEqual('/');
+  expect(url.pathnameParts).toEqual(['']);
+
+  url.pathname = '/a';
+  expect(url.pathname).toEqual('/a');
+  expect(url.pathnameParts).toEqual(['a']);
+
+  url.pathname = '/a/';
+  expect(url.pathname).toEqual('/a/');
+  expect(url.pathnameParts).toEqual(['a', '']);
+
+  url.pathname = '/a/b';
+  expect(url.pathname).toEqual('/a/b');
+  expect(url.pathnameParts).toEqual(['a', 'b']);
+
+  url.pathnameParts = [];
+  expect(url.pathname).toEqual('');
+  expect(url.pathnameParts).toEqual([]);
+
+  url.pathnameParts = [''];
+  expect(url.pathname).toEqual('/');
+  expect(url.pathnameParts).toEqual(['']);
+
+  url.pathnameParts = ['a'];
+  expect(url.pathname).toEqual('/a');
+  expect(url.pathnameParts).toEqual(['a']);
+
+  url.pathnameParts = ['a', ''];
+  expect(url.pathname).toEqual('/a/');
+  expect(url.pathnameParts).toEqual(['a', '']);
+
+  url.pathnameParts = ['a', 'b'];
+  expect(url.pathname).toEqual('/a/b');
+  expect(url.pathnameParts).toEqual(['a', 'b']);
+});

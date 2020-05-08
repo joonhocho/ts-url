@@ -149,6 +149,10 @@ export class URL {
     return _pathname ? deprefixChar(_pathname, '/').split('/') : [];
   }
 
+  set pathnameParts(parts: string[]) {
+    this.pathname = parts.join('/') || (parts.length === 0 ? '' : '/');
+  }
+
   get search(): string {
     return this._search;
   }
@@ -232,6 +236,16 @@ export class URL {
     )}${this._hash}`;
   }
 
+  get relativeHref(): string {
+    return `${this._pathname}${this._search}${this._hash}`;
+  }
+
+  get normalizedRelativeHref(): string {
+    return `${this._pathname}${formatQueryString(sortKeys(this.searchParams))}${
+      this._hash
+    }`;
+  }
+
   public setSearchParam(key: string, value: string | null): URL {
     const { searchParams } = this;
     if (searchParams[key] !== value) {
@@ -248,12 +262,15 @@ export class URL {
     return this;
   }
 
-  public removeSearchParam(key: string): URL {
+  public removeSearchParam(...keys: string[]): URL {
     const { searchParams } = this;
-    if (searchParams.hasOwnProperty(key)) {
-      delete searchParams[key];
-      this.searchParams = searchParams;
+    for (let i = 0, l = keys.length; i < l; i += 1) {
+      const key = keys[i];
+      if (searchParams.hasOwnProperty(key)) {
+        delete searchParams[key];
+      }
     }
+    this.searchParams = searchParams;
     return this;
   }
 
