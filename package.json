@@ -1,6 +1,6 @@
 {
   "name": "ts-url",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "URL object parser written in TypeScript",
   "keywords": [
     "URL",
