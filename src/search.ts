@@ -1,3 +1,5 @@
+import { decodeURIComponentSafe } from './util';
+
 export interface ISearchParams {
   [key: string]: string | null;
 }
@@ -11,10 +13,10 @@ export const parseQueryString = (search: string): ISearchParams => {
       if (part) {
         const index = part.indexOf('=');
         if (index === -1) {
-          params[decodeURIComponent(part)] = null;
+          params[decodeURIComponentSafe(part)] = null;
         } else {
-          const key = decodeURIComponent(part.substring(0, index));
-          params[key] = decodeURIComponent(part.substring(index + 1));
+          const key = decodeURIComponentSafe(part.substring(0, index));
+          params[key] = decodeURIComponentSafe(part.substring(index + 1));
         }
       }
     }

@@ -6,6 +6,7 @@ import {
   sortKeys,
 } from './search';
 import {
+  decodeURIComponentSafe,
   deprefixChar,
   encodePathname,
   prefixChar,
@@ -135,7 +136,7 @@ export class URL {
     } else {
       const hasPrefix = pathname[0] === '/';
       const encoded = encodePathname(
-        decodeURIComponent(deprefixChar(pathname, '/'))
+        decodeURIComponentSafe(deprefixChar(pathname, '/'))
       );
       this._pathname =
         hasPrefix || this._hostname || this.port
@@ -191,7 +192,7 @@ export class URL {
       this._hash = '#';
     } else {
       this._hash = prefixChar(
-        encodeURIComponent(decodeURIComponent(deprefixChar(hash, '#'))),
+        encodeURIComponent(decodeURIComponentSafe(deprefixChar(hash, '#'))),
         '#'
       );
     }

@@ -6,6 +6,8 @@ export {
 } from './search';
 export { URL, protocolSlashes } from './url';
 export {
+  decodeURIComponentSafe,
+  decodeURISafe,
   deprefix,
   deprefixChar,
   encodePathname,
