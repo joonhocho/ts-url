@@ -159,11 +159,8 @@ export class URL {
   }
 
   set search(search: string) {
-    if (!search) {
+    if (!search || search === '?') {
       this._search = '';
-      this._searchParams = {};
-    } else if (search === '?') {
-      this._search = '?';
       this._searchParams = {};
     } else {
       const searchParams = parseQueryString(prefixChar(search, '?'));
@@ -257,21 +254,45 @@ export class URL {
   }
 
   public setSearchParams(params: ISearchParams): URL {
-    if (Object.keys(params).length) {
-      this.searchParams = Object.assign(this.searchParams, params);
+    const keys = Object.keys(params);
+    if (keys.length) {
+      const { searchParams } = this;
+
+      let changed = false;
+      for (let i = 0, l = keys.length; i < l; i += 1) {
+        const key = keys[i];
+        const value = params[key];
+        if (searchParams[key] !== value) {
+          searchParams[key] = value;
+          changed = true;
+        }
+      }
+
+      if (changed) {
+        this.searchParams = searchParams;
+      }
     }
+
     return this;
   }
 
   public removeSearchParam(...keys: string[]): URL {
-    const { searchParams } = this;
-    for (let i = 0, l = keys.length; i < l; i += 1) {
-      const key = keys[i];
-      if (searchParams.hasOwnProperty(key)) {
-        delete searchParams[key];
+    if (keys.length) {
+      const { searchParams } = this;
+
+      let deleted = false;
+      for (let i = 0, l = keys.length; i < l; i += 1) {
+        const key = keys[i];
+        if (searchParams.hasOwnProperty(key)) {
+          delete searchParams[key];
+          deleted = true;
+        }
+      }
+
+      if (deleted) {
+        this.searchParams = searchParams;
       }
     }
-    this.searchParams = searchParams;
     return this;
   }
 

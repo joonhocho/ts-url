@@ -200,7 +200,7 @@ describe('URL', () => {
     url.search = '';
     expect(url.search).toBe('');
     url.search = '?';
-    expect(url.search).toBe('?');
+    expect(url.search).toBe('');
     url.search = 'a=b';
     expect(url.search).toBe('?a=b');
 
@@ -211,6 +211,10 @@ describe('URL', () => {
     expect(url.setSearchParam('b', '2').search).toBe('?a=1&b=2');
     expect(url.setSearchParams({ a: null, c: '3' }).search).toBe('?a&b=2&c=3');
     expect(url.setSearchParams({}).search).toBe('?a&b=2&c=3');
+    expect(url.setSearchParams({ a: undefined, c: undefined }).search).toBe(
+      '?b=2'
+    );
+    expect(url.setSearchParams({ b: undefined, c: undefined }).search).toBe('');
   });
 
   test('search encode', () => {

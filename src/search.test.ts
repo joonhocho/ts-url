@@ -49,6 +49,7 @@ test('formatQueryString', () => {
       c: 'd',
       e: '',
       f: null,
+      g: undefined,
     })
   ).toEqual('?a=c&c=d&e=&f');
 

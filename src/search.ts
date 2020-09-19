@@ -1,8 +1,6 @@
 import { decodeURIComponentSafe } from './util';
 
-export interface ISearchParams {
-  [key: string]: string | null;
-}
+export type ISearchParams = Record<string, string | null | undefined>;
 
 export const parseQueryString = (search: string): ISearchParams => {
   const params: ISearchParams = {};
@@ -26,16 +24,21 @@ export const parseQueryString = (search: string): ISearchParams => {
 
 export const formatQueryString = (params: ISearchParams): string => {
   const keys = Object.keys(params);
-  return keys.length
-    ? `?${keys
-        .map((k): string => {
-          const v = params[k];
-          return v == null
-            ? encodeURIComponent(k)
-            : `${encodeURIComponent(k)}=${encodeURIComponent(v)}`;
-        })
-        .join('&')}`
-    : '';
+  if (keys.length) {
+    const parts = keys
+      .map((k): string | null => {
+        const v = params[k];
+        return v === undefined
+          ? null
+          : v == null
+          ? encodeURIComponent(k)
+          : `${encodeURIComponent(k)}=${encodeURIComponent(v)}`;
+      })
+      .filter((x): boolean => x != null);
+
+    return parts.length ? `?${parts.join('&')}` : '';
+  }
+  return '';
 };
 
 const compareKeys = (a: string, b: string): number => a.localeCompare(b);
